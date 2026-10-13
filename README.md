@@ -1,4 +1,4 @@
-🌐 [Português (Brasil)](README.pt_BR.md) | [Español](README.es.md)
+🌐 English | [Español](README.es.md) | [Português (Brasil)](README.pt_BR.md) | [한국어](README.ko.md)
 
 # 🎮 Mona Mayhem
 
