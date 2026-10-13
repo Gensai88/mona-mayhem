@@ -1,4 +1,6 @@
 <!-- l10n-sync: source-file="README.md" -->
+🌐 [English](README.md) | [Español](README.es.md) | Português (Brasil) | [한국어](README.ko.md)
+
 # 🎮 Mona Mayhem
 
 **Workshop VS Code GitHub Copilot** — Construa uma Arena de Batalha de Contribuições GitHub

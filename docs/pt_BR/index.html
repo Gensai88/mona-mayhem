@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script>
+        if (!window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('.html')) {
+            window.location.replace(`${window.location.pathname}/${window.location.search}${window.location.hash}`);
+        }
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LSC44NDPLQ"></script>
     <script>
@@ -34,6 +39,7 @@
                 <li role="option" data-locale="en" aria-selected="false">🇬🇧 English</li>
                 <li role="option" data-locale="es" aria-selected="false">🇪🇸 Español</li>
                 <li role="option" data-locale="pt-BR" aria-selected="true" class="active">🇧🇷 Português (Brasil)</li>
+                <li role="option" data-locale="ko" aria-selected="false">🇰🇷 한국어</li>
             </ul>
         </div>
         <button class="theme-toggle" onclick="toggleTheme()">☀️ Claro</button>
@@ -322,7 +328,7 @@
 
     <script>
     (function(){
-      var match=location.pathname.match(/\/(pt_BR|es)\//);
+      var match=location.pathname.match(/\/(pt_BR|es|ko)\//);
       var locale=match?match[1]:'en';
       var picker=document.getElementById('localePicker');
       if(!picker)return;
@@ -343,10 +349,10 @@
           var t=li.dataset.locale==='pt-BR'?'pt_BR':li.dataset.locale;
           if(t===locale){close();return;}
           var p=location.pathname;
-          if(locale!=='en')p=p.replace(new RegExp('/'+locale+'/'),'/');;
+          if(locale!=='en')p=p.replace(new RegExp('/'+locale+'/'),'/');
           if(t!=='en'){var base=p.replace(/\/index\.html$/,'/');if(!base.endsWith('/'))base+='/';p=base+t+'/';}
           localStorage.setItem('preferred-locale',t);
-          window.location.href=p;
+          window.location.href=p+location.search+location.hash;
         });
       });
     })();
