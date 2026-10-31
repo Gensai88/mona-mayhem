@@ -433,7 +433,7 @@ const players = [
 				twoCell?.classList.add('stat-tied');
 			}
 			row?.classList.add('stat-revealed');
-			if (index < categories.length - 1) await wait(400);
+			if (index < result.categories.length - 1) await wait(400);
 		}
 
 		const winnerLabel = document.querySelector<HTMLElement>('#winner-label');
