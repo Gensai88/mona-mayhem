@@ -1,5 +1,8 @@
 ---
-
+const players = [
+	{ id: 'player1', label: 'Player 1', placeholder: 'octocat' },
+	{ id: 'player2', label: 'Player 2', placeholder: 'mona' },
+];
 ---
 
 <html lang="en">
@@ -8,10 +11,1375 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap"
+			rel="stylesheet"
+		/>
 		<title>Mona Mayhem</title>
 	</head>
 	<body>
-		<h1>Mona Mayhem</h1>
-		<p>Welcome to Mona Mayhem! Time to build a GitHub Contribution Battle Arena.</p>
+		<main class="page-shell">
+			<header class="hero">
+				<p class="eyebrow">GitHub Contribution Battle Arena</p>
+				<h1>Mona Mayhem</h1>
+				<button type="button" class="sfx-toggle" id="sfx-toggle" aria-pressed="false">
+					🔊 SFX: ON
+				</button>
+			</header>
+
+			<section class="arcade-hud" id="arcade-hud" aria-label="Player health bars" hidden>
+				<div class="health-panel health-one">
+					<div class="health-label">
+						<span>PLAYER 1 <strong data-health-name>—</strong></span>
+						<span data-health-value="1">100%</span>
+					</div>
+					<div class="health-track" role="progressbar" aria-label="Player 1 health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+						<span data-health-fill="1"></span>
+					</div>
+				</div>
+				<strong class="round-label">ROUND 1</strong>
+				<div class="health-panel health-two">
+					<div class="health-label">
+						<span>PLAYER 2 <strong data-health-name>—</strong></span>
+						<span data-health-value="2">100%</span>
+					</div>
+					<div class="health-track" role="progressbar" aria-label="Player 2 health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+						<span data-health-fill="2"></span>
+					</div>
+				</div>
+			</section>
+
+			<section class="clash-screen" id="clash-screen" aria-live="assertive" aria-atomic="true" hidden>
+				<p class="clash-caption">Mona Mayhem</p>
+				<strong id="clash-text">VS</strong>
+			</section>
+			<div class="celebration-layer" id="celebration-layer" aria-hidden="true"></div>
+
+			<form class="battle-panel" id="battle-form">
+				<div class="input-grid">
+					{players.map((player) => (
+						<label class="field" for={player.id}>
+							<span>{player.label}</span>
+							<input
+								id={player.id}
+								name={player.id}
+								type="text"
+								placeholder={player.placeholder}
+								autocomplete="off"
+							/>
+						</label>
+					))}
+				</div>
+
+				<div class="preset-matchups" aria-label="Quick-select matchups">
+					<span class="preset-label">Quick matchups</span>
+					<button type="button" class="preset-button" data-player-one="torvalds" data-player-two="gaearon">
+						torvalds vs. gaearon
+					</button>
+					<button type="button" class="preset-button" data-player-one="octocat" data-player-two="sindresorhus">
+						octocat vs. sindresorhus
+					</button>
+				</div>
+
+				<button type="submit" class="battle-button" id="battle-button">BATTLE!</button>
+			</form>
+
+			<section class="status-panel" role="status" aria-live="polite" aria-atomic="true">
+				<p class="status-text ready-indicator" id="status-message">
+					<span>INSERT COIN</span><span class="status-divider"> / </span><span>READY PLAYER 1</span>
+				</p>
+			</section>
+
+			<section class="scoreboard" id="scoreboard" aria-label="Battle score summary" hidden>
+				<div class="winner-banner">
+					<span class="winner-label" id="winner-label">Winner</span>
+					<strong id="winner-name">—</strong>
+				</div>
+				<div class="score-summary">
+					<div>
+						<span class="summary-label" id="player-one-score-label">Player 1 Battle Score</span>
+						<strong id="player-one-score">—</strong>
+					</div>
+					<div>
+						<span class="summary-label" id="player-two-score-label">Player 2 Battle Score</span>
+						<strong id="player-two-score">—</strong>
+					</div>
+				</div>
+				<div class="stats-table-wrap">
+					<table class="stats-table">
+						<thead>
+							<tr>
+								<th scope="col">Battle stat</th>
+								<th scope="col" id="stats-player-one">Player 1</th>
+								<th scope="col" id="stats-player-two">Player 2</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr data-stat-row="total">
+								<th scope="row">Total contributions</th>
+								<td data-stat-value="total" data-player-stat="1">—</td>
+								<td data-stat-value="total" data-player-stat="2">—</td>
+							</tr>
+							<tr data-stat-row="longest">
+								<th scope="row">Longest streak</th>
+								<td data-stat-value="longest" data-player-stat="1">—</td>
+								<td data-stat-value="longest" data-player-stat="2">—</td>
+							</tr>
+							<tr data-stat-row="current">
+								<th scope="row">Current streak</th>
+								<td data-stat-value="current" data-player-stat="1">—</td>
+								<td data-stat-value="current" data-player-stat="2">—</td>
+							</tr>
+							<tr data-stat-row="peak">
+								<th scope="row">Most active day</th>
+								<td data-stat-value="peak" data-player-stat="1">—</td>
+								<td data-stat-value="peak" data-player-stat="2">—</td>
+							</tr>
+							<tr data-stat-row="consistency">
+								<th scope="row">Consistency</th>
+								<td data-stat-value="consistency" data-player-stat="1">—</td>
+								<td data-stat-value="consistency" data-player-stat="2">—</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+
+			<section class="arena" id="arena" aria-label="Contribution comparison arena" hidden>
+				<article class="player-card player-one" data-player="1">
+					<header class="player-header">
+						<div class="avatar avatar-one" data-avatar aria-hidden="true">P1</div>
+						<div>
+							<p class="player-name" data-username>Player 1</p>
+							<p class="player-handle" data-date-range>Waiting for battle</p>
+						</div>
+					</header>
+					<p class="fighter-class" data-class-badge aria-label="Fighter class">CLASS: —</p>
+					<div class="player-summary">
+						<strong data-total>—</strong>
+						<span>contributions in the past year</span>
+					</div>
+					<div class="grid-scroll">
+						<div class="grid-placeholder" data-grid role="img" aria-label="Contribution activity heatmap"></div>
+					</div>
+				</article>
+
+				<div class="versus" aria-hidden="true">VS</div>
+
+				<article class="player-card player-two" data-player="2">
+					<header class="player-header">
+						<div class="avatar avatar-two" data-avatar aria-hidden="true">P2</div>
+						<div>
+							<p class="player-name" data-username>Player 2</p>
+							<p class="player-handle" data-date-range>Waiting for battle</p>
+						</div>
+					</header>
+					<p class="fighter-class" data-class-badge aria-label="Fighter class">CLASS: —</p>
+					<div class="player-summary">
+						<strong data-total>—</strong>
+						<span>contributions in the past year</span>
+					</div>
+					<div class="grid-scroll">
+						<div class="grid-placeholder" data-grid role="img" aria-label="Contribution activity heatmap"></div>
+					</div>
+				</article>
+			</section>
+		</main>
 	</body>
 </html>
+
+<script>
+	import { createArcadeSfx } from '../scripts/arcade-sfx';
+	import { calculatePlayerMetrics, scoreBattle } from '../lib/contributions';
+	import type { ContributionData } from '../lib/contributions';
+
+	interface ApiError {
+		error?: string;
+	}
+
+	const form = document.querySelector<HTMLFormElement>('#battle-form');
+	const playerInputs = [
+		document.querySelector<HTMLInputElement>('#player1'),
+		document.querySelector<HTMLInputElement>('#player2'),
+	];
+	const statusMessage = document.querySelector<HTMLElement>('#status-message');
+	const battleButton = document.querySelector<HTMLButtonElement>('#battle-button');
+	const scoreboard = document.querySelector<HTMLElement>('#scoreboard');
+	const arena = document.querySelector<HTMLElement>('#arena');
+	const arcadeHud = document.querySelector<HTMLElement>('#arcade-hud');
+	const clashScreen = document.querySelector<HTMLElement>('#clash-screen');
+	const clashText = document.querySelector<HTMLElement>('#clash-text');
+	const pageShell = document.querySelector<HTMLElement>('.page-shell');
+	const celebrationLayer = document.querySelector<HTMLElement>('#celebration-layer');
+	const sfx = createArcadeSfx(document.querySelector<HTMLButtonElement>('#sfx-toggle'));
+
+	const formatNumber = new Intl.NumberFormat();
+	let presetTriggeredSubmit = false;
+	const wait = (milliseconds: number) =>
+		window.matchMedia('(prefers-reduced-motion: reduce)').matches
+			? Promise.resolve()
+			: new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
+
+	document.querySelectorAll<HTMLButtonElement>('.preset-button').forEach((button) => {
+		button.addEventListener('click', () => {
+			const [playerOne, playerTwo] = playerInputs;
+			if (!playerOne || !playerTwo || !form || battleButton?.disabled) return;
+
+			sfx.playCoin();
+			playerOne.value = button.dataset.playerOne ?? '';
+			playerTwo.value = button.dataset.playerTwo ?? '';
+			presetTriggeredSubmit = true;
+			form.requestSubmit();
+		});
+	});
+
+	function setStatus(message: string, isError = false) {
+		if (!statusMessage) return;
+		statusMessage.textContent = message;
+		statusMessage.classList.remove('ready-indicator');
+		statusMessage.classList.toggle('error', isError);
+	}
+
+	function syncBattleUrl(playerOne: string, playerTwo: string) {
+		const url = new URL(window.location.href);
+		url.searchParams.set('p1', playerOne);
+		url.searchParams.set('p2', playerTwo);
+		window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+	}
+
+	async function playClashSequence() {
+		if (!clashScreen || !clashText) return;
+		clashScreen.hidden = false;
+		for (const [index, callout] of ['VS', '3', '2', '1', 'FIGHT!'].entries()) {
+			clashText.textContent = callout;
+			clashText.classList.toggle('fight-callout', callout === 'FIGHT!');
+			await wait(index === 0 ? 350 : 450);
+		}
+		clashScreen.hidden = true;
+	}
+
+	function setHealth(playerNumber: number, health: number) {
+		const boundedHealth = Math.max(0, Math.min(100, health));
+		const fill = document.querySelector<HTMLElement>(`[data-health-fill="${playerNumber}"]`);
+		const value = document.querySelector<HTMLElement>(`[data-health-value="${playerNumber}"]`);
+		const track = fill?.parentElement;
+		if (fill) fill.style.width = `${boundedHealth}%`;
+		if (value) value.textContent = `${boundedHealth}%`;
+		track?.setAttribute('aria-valuenow', String(boundedHealth));
+	}
+
+	function resetBattleSequence(playerOne: string, playerTwo: string) {
+		if (arcadeHud) arcadeHud.hidden = false;
+		document.querySelectorAll<HTMLElement>('[data-health-name]').forEach((name, index) => {
+			name.textContent = index === 0 ? playerOne : playerTwo;
+		});
+		setHealth(1, 100);
+		setHealth(2, 100);
+		document.querySelectorAll<HTMLElement>('[data-stat-row]').forEach((row) => {
+			row.classList.add('stat-pending');
+			row.classList.remove('player-one-wins', 'player-two-wins', 'stat-tie', 'stat-revealed');
+			row.querySelectorAll<HTMLElement>('[data-player-stat]').forEach((cell) => {
+				cell.classList.remove('stat-winner', 'stat-tied');
+				cell.textContent = '—';
+			});
+		});
+		const banner = document.querySelector<HTMLElement>('.winner-banner');
+		banner?.classList.remove('is-final');
+		if (banner) banner.setAttribute('data-result', '');
+		if (pageShell) pageShell.classList.remove('screen-shake');
+	}
+
+	function clearPreviousBattle() {
+		if (scoreboard) scoreboard.hidden = true;
+		if (arena) arena.hidden = true;
+		if (arcadeHud) arcadeHud.hidden = true;
+		if (clashScreen) clashScreen.hidden = true;
+		document.querySelectorAll<HTMLElement>('[data-player]').forEach((card) => {
+			const username = card.querySelector<HTMLElement>('[data-username]');
+			const dateRange = card.querySelector<HTMLElement>('[data-date-range]');
+			const total = card.querySelector<HTMLElement>('[data-total]');
+			const avatar = card.querySelector<HTMLElement>('[data-avatar]');
+			const classBadge = card.querySelector<HTMLElement>('[data-class-badge]');
+			const grid = card.querySelector<HTMLElement>('[data-grid]');
+			if (username) username.textContent = 'Player';
+			if (dateRange) dateRange.textContent = 'Waiting for battle';
+			if (total) total.textContent = '—';
+			if (avatar) avatar.textContent = 'P';
+			if (classBadge) classBadge.textContent = 'CLASS: —';
+			grid?.replaceChildren();
+		});
+	}
+
+	function renderSkeletons() {
+		document.querySelectorAll<HTMLElement>('[data-grid]').forEach((grid) => {
+			grid.replaceChildren();
+			for (let i = 0; i < 364; i += 1) {
+				const cell = document.createElement('span');
+				cell.className = 'cell skeleton-cell';
+				cell.setAttribute('aria-hidden', 'true');
+				grid.append(cell);
+			}
+		});
+	}
+
+	async function fetchContributions(username: string, playerNumber: number): Promise<ContributionData> {
+		const response = await fetch(`/api/contributions/${encodeURIComponent(username)}`);
+		const payload = (await response.json()) as ContributionData & ApiError;
+
+		if (response.status === 404) {
+			throw new Error(`Player ${playerNumber}: GitHub user “${username}” was not found.`);
+		}
+		if (!response.ok) {
+			throw new Error(payload.error ?? `Player ${playerNumber}: Unable to load “${username}”.`);
+		}
+		if (!Array.isArray(payload.daily)) {
+			throw new Error(`Player ${playerNumber}: GitHub returned invalid contribution data.`);
+		}
+
+		return payload;
+	}
+
+	function renderPlayer(playerNumber: number, data: ContributionData) {
+		const card = document.querySelector<HTMLElement>(`[data-player="${playerNumber}"]`);
+		if (!card) return;
+
+		const days = data.daily.slice(-364);
+		const grid = card.querySelector<HTMLElement>('[data-grid]');
+		const username = card.querySelector<HTMLElement>('[data-username]');
+		const dateRange = card.querySelector<HTMLElement>('[data-date-range]');
+		const total = card.querySelector<HTMLElement>('[data-total]');
+		const avatar = card.querySelector<HTMLElement>('[data-avatar]');
+		const classBadge = card.querySelector<HTMLElement>('[data-class-badge]');
+
+		if (!grid || !username || !dateRange || !total || !avatar || !classBadge) return;
+
+		const metrics = calculatePlayerMetrics(data);
+		username.textContent = data.username;
+		dateRange.textContent = data.from && data.to ? `${data.from} — ${data.to}` : 'Last 52 weeks';
+		total.textContent = formatNumber.format(metrics.total);
+		avatar.textContent = data.username.slice(0, 2).toUpperCase();
+		classBadge.textContent = metrics.fighterClass;
+		classBadge.title = metrics.classDescription;
+		classBadge.setAttribute('aria-label', `${metrics.fighterClass}: ${metrics.classDescription}`);
+		grid.replaceChildren();
+		grid.setAttribute('aria-label', `${data.username} contribution activity for the last 52 weeks`);
+
+		for (const day of days) {
+			const cell = document.createElement('span');
+			const level = Math.max(0, Math.min(4, Math.floor(day.level)));
+			cell.className = 'cell heatmap-cell';
+			cell.dataset.level = String(level);
+			cell.title = `${day.date}: ${day.count} contribution${day.count === 1 ? '' : 's'}`;
+			cell.setAttribute('aria-label', cell.title);
+			grid.append(cell);
+		}
+	}
+
+	async function animateHeatmaps() {
+		const grids = [...document.querySelectorAll<HTMLElement>('[data-grid]')];
+		for (let column = 0; column < 52; column += 1) {
+			grids.forEach((grid) => {
+				for (let row = 0; row < 7; row += 1) {
+					grid.children.item(column * 7 + row)?.classList.add('is-revealed');
+				}
+			});
+			await wait(22);
+		}
+	}
+
+	async function renderBattleScore(playerOne: ContributionData, playerTwo: ContributionData) {
+		const result = scoreBattle(playerOne, playerTwo);
+		const health = [100, 100];
+
+		for (const [index, category] of result.categories.entries()) {
+			sfx.playHit();
+			const { id, playerOneValue: one, playerTwoValue: two, winner } = category;
+			const row = document.querySelector<HTMLElement>(`[data-stat-row="${id}"]`);
+			const oneCell = row?.querySelector<HTMLElement>('[data-player-stat="1"]');
+			const twoCell = row?.querySelector<HTMLElement>('[data-player-stat="2"]');
+
+			if (id === 'peak') {
+				const peakOne = `${formatNumber.format(one)} (${result.playerOne.peakDate})`;
+				const peakTwo = `${formatNumber.format(two)} (${result.playerTwo.peakDate})`;
+				if (oneCell) oneCell.textContent = peakOne;
+				if (twoCell) twoCell.textContent = peakTwo;
+			} else if (id === 'consistency') {
+				if (oneCell) oneCell.textContent = `${one.toFixed(1)}%`;
+				if (twoCell) twoCell.textContent = `${two.toFixed(1)}%`;
+			} else {
+				if (oneCell) oneCell.textContent = formatNumber.format(one);
+				if (twoCell) twoCell.textContent = formatNumber.format(two);
+			}
+
+			row?.classList.remove('player-one-wins', 'player-two-wins', 'stat-tie', 'stat-pending');
+			oneCell?.classList.remove('stat-winner', 'stat-tied');
+			twoCell?.classList.remove('stat-winner', 'stat-tied');
+
+			if (winner === 1) {
+				health[1] = Math.max(0, health[1] - 20);
+				setHealth(2, health[1]);
+				row?.classList.add('player-one-wins');
+				oneCell?.classList.add('stat-winner');
+			} else if (winner === 2) {
+				health[0] = Math.max(0, health[0] - 20);
+				setHealth(1, health[0]);
+				row?.classList.add('player-two-wins');
+				twoCell?.classList.add('stat-winner');
+			} else {
+				row?.classList.add('stat-tie');
+				oneCell?.classList.add('stat-tied');
+				twoCell?.classList.add('stat-tied');
+			}
+			row?.classList.add('stat-revealed');
+			if (index < categories.length - 1) await wait(400);
+		}
+
+		const winnerLabel = document.querySelector<HTMLElement>('#winner-label');
+		const winnerName = document.querySelector<HTMLElement>('#winner-name');
+		const playerOneScoreLabel = document.querySelector<HTMLElement>('#player-one-score-label');
+		const playerTwoScoreLabel = document.querySelector<HTMLElement>('#player-two-score-label');
+		const playerOneScore = document.querySelector<HTMLElement>('#player-one-score');
+		const playerTwoScore = document.querySelector<HTMLElement>('#player-two-score');
+		const statsPlayerOne = document.querySelector<HTMLElement>('#stats-player-one');
+		const statsPlayerTwo = document.querySelector<HTMLElement>('#stats-player-two');
+
+		const isTie = result.winner === null;
+		if (winnerLabel) winnerLabel.textContent = isTie ? 'DOUBLE K.O.' : 'VICTORY!';
+		if (winnerName) winnerName.textContent = result.winner ?? 'It’s a tie!';
+		if (playerOneScoreLabel) playerOneScoreLabel.textContent = `${playerOne.username} Battle Score`;
+		if (playerTwoScoreLabel) playerTwoScoreLabel.textContent = `${playerTwo.username} Battle Score`;
+		if (playerOneScore) playerOneScore.textContent = `${result.playerOneScore.toFixed(1)} / 5`;
+		if (playerTwoScore) playerTwoScore.textContent = `${result.playerTwoScore.toFixed(1)} / 5`;
+		if (statsPlayerOne) statsPlayerOne.textContent = playerOne.username;
+		if (statsPlayerTwo) statsPlayerTwo.textContent = playerTwo.username;
+		const banner = document.querySelector<HTMLElement>('.winner-banner');
+		banner?.classList.add('is-final');
+		banner?.setAttribute('data-result', isTie ? 'tie' : 'winner');
+		pageShell?.classList.add('screen-shake');
+		celebrate();
+		sfx.playVictory(isTie);
+	}
+
+	function celebrate() {
+		if (!celebrationLayer) return;
+		const colors = ['#55fff0', '#8dff73', '#ff4fd8', '#ffe66d', '#ffffff'];
+		for (let index = 0; index < 36; index += 1) {
+			const particle = document.createElement('span');
+			particle.className = 'celebration-particle';
+			particle.style.left = `${Math.random() * 100}%`;
+			particle.style.setProperty('--particle-color', colors[index % colors.length]);
+			particle.style.setProperty('--particle-delay', `${Math.random() * 450}ms`);
+			particle.style.setProperty('--particle-drift', `${Math.round(Math.random() * 180 - 90)}px`);
+			celebrationLayer.append(particle);
+			window.setTimeout(() => particle.remove(), 2200);
+		}
+		window.setTimeout(() => pageShell?.classList.remove('screen-shake'), 500);
+	}
+
+	form?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		if (battleButton?.disabled) return;
+		if (presetTriggeredSubmit) {
+			presetTriggeredSubmit = false;
+		} else {
+			sfx.playCoin();
+		}
+		clearPreviousBattle();
+		const usernames = playerInputs.map((input) => input?.value.trim() ?? '');
+
+		if (usernames.some((username) => !username)) {
+			setStatus('Enter both GitHub usernames before starting the battle.', true);
+			playerInputs.find((input) => !input?.value.trim())?.focus();
+			return;
+		}
+		syncBattleUrl(usernames[0], usernames[1]);
+
+		if (!battleButton || !scoreboard || !arena) return;
+		battleButton.disabled = true;
+		scoreboard.hidden = true;
+		arena.hidden = false;
+		setStatus('Fetching fighters…');
+		resetBattleSequence(usernames[0], usernames[1]);
+		renderSkeletons();
+		sfx.playPowerUp();
+
+		let clashSequence: Promise<void> | null = null;
+		try {
+			clashSequence = playClashSequence();
+			const [playerOne, playerTwo] = await Promise.all([
+				fetchContributions(usernames[0], 1),
+				fetchContributions(usernames[1], 2),
+			]);
+			await clashSequence;
+
+			renderPlayer(1, playerOne);
+			renderPlayer(2, playerTwo);
+			scoreboard.hidden = false;
+			setStatus('Fighters ready! Revealing the arena…');
+			await animateHeatmaps();
+			await renderBattleScore(playerOne, playerTwo);
+			const winner = document.querySelector<HTMLElement>('#winner-name')?.textContent ?? 'It’s a tie!';
+			const scoreOne = document.querySelector<HTMLElement>('#player-one-score')?.textContent ?? '0 / 5';
+			const scoreTwo = document.querySelector<HTMLElement>('#player-two-score')?.textContent ?? '0 / 5';
+			setStatus(`Battle complete. ${winner} — ${playerOne.username} ${scoreOne}, ${playerTwo.username} ${scoreTwo}.`);
+		} catch (error) {
+			if (clashSequence) await clashSequence;
+			if (clashScreen) clashScreen.hidden = true;
+			if (arcadeHud) arcadeHud.hidden = true;
+			scoreboard.hidden = true;
+			arena.hidden = true;
+			setStatus(error instanceof Error ? error.message : 'Unable to load contribution data. Please try again.', true);
+		} finally {
+			battleButton.disabled = false;
+		}
+	});
+
+	const sharedUrl = new URL(window.location.href);
+	const sharedPlayerOne = sharedUrl.searchParams.get('p1')?.trim() ?? '';
+	const sharedPlayerTwo = sharedUrl.searchParams.get('p2')?.trim() ?? '';
+	if (sharedPlayerOne && sharedPlayerTwo && playerInputs[0] && playerInputs[1] && form) {
+		playerInputs[0].value = sharedPlayerOne;
+		playerInputs[1].value = sharedPlayerTwo;
+		presetTriggeredSubmit = true;
+		form.requestSubmit();
+	}
+</script>
+
+<style>
+	:root {
+		--bg: #0a0a12;
+		--panel: #11101d;
+		--panel-alt: #191626;
+		--line: #4a2d70;
+		--text: #f4edff;
+		--muted: #a99dbb;
+		--accent: #ffe66d;
+		--accent-2: #55fff0;
+		--danger: #ff5577;
+		--player-one: #55fff0;
+		--player-one-green: #8dff73;
+		--player-two: #ff4fd8;
+		--player-two-gold: #ffe66d;
+		--level-0: #171522;
+		--level-1: #244e57;
+		--level-2: #1ea98e;
+		--level-3: #50ffd0;
+		--level-4: #c3ff5a;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	html, body {
+		margin: 0;
+		padding: 0;
+		font-family: 'JetBrains Mono', monospace;
+		background: var(--bg);
+		color: var(--text);
+	}
+
+	body {
+		min-height: 100vh;
+		position: relative;
+		background:
+			radial-gradient(ellipse at 50% 35%, rgba(52, 23, 83, 0.3), transparent 55%),
+			var(--bg);
+	}
+
+	body::before,
+	body::after {
+		position: fixed;
+		inset: 0;
+		content: '';
+		pointer-events: none;
+		z-index: 20;
+	}
+
+	body::before {
+		background: repeating-linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0) 0,
+			rgba(0, 0, 0, 0) 3px,
+			rgba(0, 0, 0, 0.28) 4px
+		);
+		opacity: 0.34;
+	}
+
+	body::after {
+		background: radial-gradient(ellipse at center, transparent 48%, rgba(0, 0, 0, 0.72) 100%);
+	}
+
+	.page-shell {
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 48px 24px 72px;
+		position: relative;
+		z-index: 1;
+	}
+
+	.hero {
+		position: relative;
+		text-align: center;
+		margin: 0 0 24px;
+		padding: 0 150px;
+	}
+
+	.sfx-toggle {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: 9px 11px;
+		border: 1px solid rgba(85, 255, 240, 0.55);
+		border-radius: 2px;
+		background: rgba(17, 16, 29, 0.94);
+		color: var(--player-one);
+		font: 0.55rem 'Press Start 2P', monospace;
+		cursor: pointer;
+		text-shadow: 0 0 8px rgba(85, 255, 240, 0.55);
+		box-shadow: 0 0 10px rgba(85, 255, 240, 0.14);
+	}
+
+	.sfx-toggle:hover,
+	.sfx-toggle:focus-visible {
+		outline: none;
+		border-color: var(--player-one-green);
+		box-shadow: 0 0 14px rgba(141, 255, 115, 0.4);
+	}
+
+	.eyebrow {
+		margin: 0 0 8px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--player-one);
+		font: 10px/1.8 'Press Start 2P', monospace;
+		text-shadow: 0 0 8px rgba(85, 255, 240, 0.75);
+	}
+
+	h1 {
+		margin: 0;
+		font: clamp(1.7rem, 5vw, 3.2rem)/1.5 'Press Start 2P', monospace;
+		color: #fff;
+		text-shadow:
+			0 0 5px #fff,
+			0 0 14px var(--player-two),
+			0 0 34px rgba(255, 79, 216, 0.8);
+		animation: neon-flicker 4s infinite;
+	}
+
+	.battle-panel,
+	.status-panel,
+	.scoreboard,
+	.player-card {
+		background: rgba(17, 16, 29, 0.94);
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		box-shadow:
+			0 0 0 1px rgba(255, 79, 216, 0.13),
+			0 0 18px rgba(138, 43, 226, 0.16),
+			inset 0 0 22px rgba(50, 20, 70, 0.18);
+	}
+
+	.battle-panel {
+		padding: 20px;
+		margin-bottom: 16px;
+	}
+
+	.input-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(180px, 1fr));
+		gap: 16px;
+		margin-bottom: 16px;
+	}
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		font-size: 0.8rem;
+		color: var(--player-one);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+
+	.field input {
+		padding: 12px 14px;
+		font-size: 1rem;
+		border-radius: 2px;
+		border: 1px solid rgba(85, 255, 240, 0.42);
+		background: rgba(9, 14, 24, 0.9);
+		color: var(--text);
+		font-family: 'JetBrains Mono', monospace;
+		box-shadow: inset 0 0 12px rgba(85, 255, 240, 0.05);
+	}
+
+	.field input:focus {
+		outline: 1px solid var(--player-one);
+		box-shadow: 0 0 12px rgba(85, 255, 240, 0.28);
+	}
+
+	.preset-matchups {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin: 0 0 16px;
+	}
+
+	.preset-label {
+		margin-right: 4px;
+		color: var(--muted);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.preset-button {
+		padding: 8px 11px;
+		border: 1px solid rgba(255, 79, 216, 0.5);
+		border-radius: 2px;
+		background: var(--panel-alt);
+		color: var(--text);
+		cursor: pointer;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.85rem;
+		text-shadow: 0 0 8px rgba(255, 79, 216, 0.35);
+	}
+
+	.preset-button:hover,
+	.preset-button:focus-visible {
+		border-color: var(--player-two);
+		box-shadow: 0 0 10px rgba(255, 79, 216, 0.35);
+	}
+
+	.battle-button {
+		display: block;
+		width: 100%;
+		padding: 14px 20px;
+		border: none;
+		border: 1px solid #fff1a8;
+		border-radius: 2px;
+		cursor: pointer;
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.9rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		background: linear-gradient(180deg, #ffe66d, #ff9f43);
+		color: #21112a;
+		box-shadow: 0 0 16px rgba(255, 230, 109, 0.35), inset 0 2px rgba(255, 255, 255, 0.55);
+		text-shadow: 1px 2px rgba(255, 255, 255, 0.25);
+		transition: transform 120ms ease, box-shadow 120ms ease;
+	}
+
+	.battle-button:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 0 24px rgba(255, 230, 109, 0.65), inset 0 2px rgba(255, 255, 255, 0.55);
+	}
+
+	.battle-button:active:not(:disabled) {
+		transform: translateY(1px);
+	}
+
+	.battle-button:disabled {
+		cursor: wait;
+		opacity: 0.65;
+	}
+
+	.status-panel {
+		padding: 14px 18px;
+		margin-bottom: 18px;
+	}
+
+	.arcade-hud {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		align-items: center;
+		gap: 18px;
+		margin: 0 0 18px;
+		padding: 14px 18px;
+		border: 1px solid var(--line);
+		background: rgba(17, 16, 29, 0.96);
+		box-shadow: 0 0 18px rgba(138, 43, 226, 0.2);
+	}
+
+	.arcade-hud[hidden] {
+		display: none;
+	}
+
+	.health-label {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+		margin-bottom: 7px;
+		font: 0.55rem 'Press Start 2P', monospace;
+	}
+
+	.health-one .health-label {
+		color: var(--player-one);
+	}
+
+	.health-two .health-label {
+		color: var(--player-two);
+	}
+
+	.health-track {
+		height: 14px;
+		overflow: hidden;
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		background: #272333;
+		box-shadow: inset 0 0 6px #000;
+	}
+
+	.health-track > span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		transition: width 420ms ease;
+	}
+
+	.health-one .health-track > span {
+		background: linear-gradient(90deg, #36d87e, #a4ff70);
+		box-shadow: 0 0 12px rgba(141, 255, 115, 0.8);
+	}
+
+	.health-two .health-track > span {
+		margin-left: auto;
+		background: linear-gradient(90deg, #ffae46, #ff4fd8);
+		box-shadow: 0 0 12px rgba(255, 79, 216, 0.8);
+	}
+
+	.round-label {
+		color: var(--player-two-gold);
+		font: 0.55rem/1.6 'Press Start 2P', monospace;
+		text-align: center;
+		text-shadow: 0 0 8px rgba(255, 230, 109, 0.7);
+		white-space: nowrap;
+	}
+
+	.clash-screen {
+		position: fixed;
+		inset: 0;
+		z-index: 15;
+		display: grid;
+		place-content: center;
+		gap: 24px;
+		text-align: center;
+		background: rgba(5, 5, 12, 0.88);
+		backdrop-filter: blur(3px);
+	}
+
+	.clash-screen[hidden] {
+		display: none;
+	}
+
+	.clash-caption {
+		margin: 0;
+		color: var(--player-one);
+		font: 0.65rem 'Press Start 2P', monospace;
+		text-shadow: 0 0 12px var(--player-one);
+	}
+
+	#clash-text {
+		color: #fff;
+		font: clamp(2.5rem, 12vw, 7rem) 'Press Start 2P', monospace;
+		text-shadow: 0 0 12px var(--player-two), 0 0 36px var(--player-two);
+		animation: clash-pop 350ms ease-out both;
+	}
+
+	#clash-text.fight-callout {
+		color: var(--player-two-gold);
+		text-shadow: 0 0 14px var(--player-two-gold), 0 0 42px #ff5b32;
+	}
+
+	.celebration-layer {
+		position: fixed;
+		inset: 0;
+		z-index: 14;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.celebration-particle {
+		position: absolute;
+		top: 35%;
+		width: 8px;
+		height: 14px;
+		background: var(--particle-color);
+		box-shadow: 0 0 10px var(--particle-color);
+		animation: particle-burst 1.7s ease-out var(--particle-delay) forwards;
+	}
+
+	.status-text {
+		margin: 0;
+		color: var(--player-one-green);
+		font-size: 0.9rem;
+		text-shadow: 0 0 8px rgba(141, 255, 115, 0.7);
+	}
+
+	.ready-indicator {
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.72rem;
+		text-align: center;
+		animation: status-blink 1.1s steps(2, start) infinite;
+	}
+
+	.status-divider {
+		color: var(--player-two-gold);
+	}
+
+	.status-text.error {
+		color: var(--danger);
+		text-shadow: 0 0 10px rgba(255, 85, 119, 0.7);
+		animation: none;
+	}
+
+	.scoreboard {
+		padding: 18px 20px;
+		margin-bottom: 24px;
+	}
+
+	.winner-banner {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--line);
+		font: 1rem 'Press Start 2P', monospace;
+	}
+
+	.winner-banner.is-final {
+		animation: victory-slam 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	.winner-banner.is-final[data-result="winner"] strong {
+		color: var(--player-two-gold);
+		text-shadow: 0 0 12px var(--player-two-gold), 0 0 30px rgba(255, 79, 216, 0.8);
+	}
+
+	.winner-banner.is-final[data-result="tie"] strong {
+		color: var(--player-two);
+		text-shadow: 0 0 12px var(--player-two), 0 0 30px rgba(255, 79, 216, 0.8);
+	}
+
+	.stat-pending {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+
+	.stat-revealed {
+		opacity: 1;
+		transform: translateY(0);
+		transition: opacity 220ms ease, transform 220ms ease;
+	}
+
+	.winner-label {
+		color: var(--player-two-gold);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-size: 0.72rem;
+	}
+
+	.score-summary {
+		display: flex;
+		gap: 28px;
+	}
+
+	.score-summary > div {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.score-summary strong {
+		color: var(--player-one);
+		font: 0.9rem 'Press Start 2P', monospace;
+		text-shadow: 0 0 10px rgba(85, 255, 240, 0.65);
+	}
+
+	.summary-label {
+		color: var(--muted);
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.stats-table-wrap {
+		overflow-x: auto;
+		margin-top: 20px;
+	}
+
+	.stats-table {
+		width: 100%;
+		border-collapse: collapse;
+		text-align: left;
+	}
+
+	.stats-table th,
+	.stats-table td {
+		padding: 11px 12px;
+		border-top: 1px solid var(--line);
+	}
+
+	.stats-table thead th {
+		color: var(--player-two-gold);
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.55rem;
+	}
+
+	.stats-table tbody th {
+		font-weight: 500;
+		color: var(--muted);
+	}
+
+	.stats-table td.stat-winner {
+		color: var(--player-one-green);
+		font-weight: 700;
+		background: rgba(141, 255, 115, 0.08);
+		text-shadow: 0 0 9px rgba(141, 255, 115, 0.55);
+	}
+
+	.stats-table td.stat-tied {
+		color: var(--player-two-gold);
+	}
+
+	.stats-table tr.player-one-wins th,
+	.stats-table tr.player-two-wins th {
+		color: var(--text);
+	}
+
+	.stats-table tr.stat-tie th {
+		color: var(--accent-2);
+	}
+
+	.arena {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		align-items: center;
+		gap: 16px;
+	}
+
+	.arena[hidden],
+	.scoreboard[hidden] {
+		display: none;
+	}
+
+	.player-card {
+		padding: 18px;
+		min-width: 0;
+		position: relative;
+		overflow: hidden;
+		animation: cabinet-shine 6s linear infinite;
+	}
+
+	.player-card::after {
+		position: absolute;
+		inset: 0;
+		content: '';
+		pointer-events: none;
+		z-index: 1;
+		background: linear-gradient(110deg, transparent 38%, rgba(255, 255, 255, 0.055) 50%, transparent 62%);
+		background-size: 220% 100%;
+		animation: cabinet-shine 7s ease-in-out infinite;
+	}
+
+	.player-card > * {
+		position: relative;
+		z-index: 2;
+	}
+
+	.player-one {
+		border-color: rgba(85, 255, 240, 0.65);
+		box-shadow: 0 0 18px rgba(85, 255, 240, 0.15), inset 0 0 24px rgba(85, 255, 240, 0.035);
+	}
+
+	.player-two {
+		border-color: rgba(255, 79, 216, 0.65);
+		box-shadow: 0 0 18px rgba(255, 79, 216, 0.15), inset 0 0 24px rgba(255, 79, 216, 0.035);
+	}
+
+	.player-summary {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		margin: 0 0 12px;
+	}
+
+	.player-summary strong {
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.95rem;
+		color: var(--player-one-green);
+		text-shadow: 0 0 9px rgba(141, 255, 115, 0.55);
+	}
+
+	.player-summary span {
+		color: var(--muted);
+		font-size: 0.8rem;
+	}
+
+	.player-two .player-summary strong {
+		color: var(--player-two-gold);
+		text-shadow: 0 0 9px rgba(255, 230, 109, 0.55);
+	}
+
+	.versus {
+		font: 1rem 'Press Start 2P', monospace;
+		letter-spacing: 0.08em;
+		color: var(--player-two);
+		text-shadow: 0 0 8px var(--player-two), 0 0 22px rgba(255, 79, 216, 0.65);
+		animation: versus-pulse 1.5s ease-in-out infinite alternate;
+	}
+
+	.player-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.fighter-class {
+		display: inline-block;
+		margin: 0 0 14px;
+		padding: 7px 9px;
+		border: 1px solid rgba(85, 255, 240, 0.45);
+		color: var(--player-one-green);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-shadow: 0 0 8px rgba(141, 255, 115, 0.45);
+		box-shadow: 0 0 9px rgba(141, 255, 115, 0.12);
+	}
+
+	.player-two .fighter-class {
+		border-color: rgba(255, 79, 216, 0.5);
+		color: var(--player-two-gold);
+		text-shadow: 0 0 8px rgba(255, 230, 109, 0.45);
+		box-shadow: 0 0 9px rgba(255, 79, 216, 0.12);
+	}
+
+	.avatar {
+		display: grid;
+		place-items: center;
+		width: 52px;
+		height: 52px;
+		border-radius: 50%;
+		font-weight: 700;
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.7rem;
+		border: 1px solid currentColor;
+		box-shadow: 0 0 14px currentColor;
+	}
+
+	.avatar-one {
+		background: rgba(85, 255, 240, 0.12);
+		color: var(--player-one);
+	}
+
+	.avatar-two {
+		background: rgba(255, 79, 216, 0.12);
+		color: var(--player-two);
+	}
+
+	.player-name {
+		margin: 0;
+		font-size: 1.1rem;
+		font-weight: 700;
+		color: var(--player-one);
+		text-shadow: 0 0 8px rgba(85, 255, 240, 0.45);
+	}
+
+	.player-two .player-name {
+		color: var(--player-two);
+		text-shadow: 0 0 8px rgba(255, 79, 216, 0.45);
+	}
+
+	.player-handle {
+		margin: 4px 0 0;
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(120px, 1fr));
+		gap: 10px;
+		margin-bottom: 18px;
+	}
+
+	.stat-box {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 12px 14px;
+		background: rgba(255, 255, 255, 0.02);
+		border-radius: 10px;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.stat-box span {
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--muted);
+	}
+
+	.grid-scroll {
+		overflow-x: auto;
+		padding: 4px 0 8px;
+	}
+
+	.grid-placeholder {
+		display: grid;
+		grid-template-columns: repeat(52, 10px);
+		grid-template-rows: repeat(7, 10px);
+		grid-auto-flow: column;
+		gap: 3px;
+		width: max-content;
+	}
+
+	.cell {
+		width: 10px;
+		height: 10px;
+		border-radius: 2px;
+		background: var(--level-0);
+		border: 1px solid rgba(255, 255, 255, 0.035);
+		transition: transform 120ms ease, box-shadow 120ms ease;
+	}
+
+	.cell[data-level="0"] { background: var(--level-0); }
+	.cell[data-level="1"] { background: var(--level-1); box-shadow: 0 0 3px rgba(36, 78, 87, 0.55); }
+	.cell[data-level="2"] { background: var(--level-2); box-shadow: 0 0 5px rgba(30, 169, 142, 0.6); }
+	.cell[data-level="3"] { background: var(--level-3); box-shadow: 0 0 8px rgba(80, 255, 208, 0.75); }
+	.cell[data-level="4"] { background: var(--level-4); box-shadow: 0 0 11px rgba(195, 255, 90, 0.9); }
+
+	.heatmap-cell {
+		opacity: 0;
+		transform: scale(0.65);
+	}
+
+	.heatmap-cell.is-revealed {
+		opacity: 1;
+		transform: scale(1);
+		transition: opacity 180ms ease, transform 180ms ease;
+	}
+
+	.cell:not(.skeleton-cell):hover {
+		transform: scale(1.55);
+		box-shadow: 0 0 12px currentColor;
+		z-index: 1;
+	}
+
+	.skeleton-cell {
+		animation: pulse 1.2s ease-in-out infinite alternate;
+		background: #263453;
+	}
+
+	@keyframes pulse {
+		from { opacity: 0.45; }
+		to { opacity: 1; }
+	}
+
+	@keyframes status-blink {
+		to { visibility: hidden; }
+	}
+
+	@keyframes neon-flicker {
+		0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; }
+		20%, 63% { opacity: 0.82; }
+	}
+
+	@keyframes versus-pulse {
+		from { transform: scale(0.96); filter: brightness(0.85); }
+		to { transform: scale(1.08); filter: brightness(1.35); }
+	}
+
+	@keyframes cabinet-shine {
+		0%, 82%, 100% { background-position: -180% 0; }
+		92% { background-position: 180% 0; }
+	}
+
+	@keyframes clash-pop {
+		from { opacity: 0; transform: scale(1.7); }
+		to { opacity: 1; transform: scale(1); }
+	}
+
+	@keyframes victory-slam {
+		0% { opacity: 0; transform: scale(2.3) rotate(-3deg); }
+		65% { opacity: 1; transform: scale(0.92) rotate(1deg); }
+		100% { opacity: 1; transform: scale(1) rotate(0); }
+	}
+
+	@keyframes screen-shake {
+		0%, 100% { transform: translateX(0); }
+		20%, 60% { transform: translateX(-5px); }
+		40%, 80% { transform: translateX(5px); }
+	}
+
+	.screen-shake {
+		animation: screen-shake 420ms linear;
+	}
+
+	@keyframes particle-burst {
+		0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(0.5); }
+		15% { opacity: 1; }
+		100% {
+			opacity: 0;
+			transform: translate(var(--particle-drift), 75vh) rotate(620deg) scale(0.8);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		*, *::before, *::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			scroll-behavior: auto !important;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.page-shell {
+			padding: 32px 16px 48px;
+		}
+
+		.hero {
+			padding: 52px 0 0;
+		}
+
+		.sfx-toggle {
+			top: 0;
+			right: 50%;
+			transform: translateX(50%);
+		}
+
+		.ready-indicator {
+			font-size: 0.58rem;
+			line-height: 2;
+		}
+
+		.input-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.arena {
+			grid-template-columns: 1fr;
+		}
+
+		.versus {
+			text-align: center;
+		}
+
+		.arcade-hud {
+			grid-template-columns: 1fr;
+		}
+
+		.round-label {
+			order: -1;
+		}
+	}
+</style>
